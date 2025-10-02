@@ -273,10 +273,13 @@ app.delete("/api/questions/:id", async (req, res) => {
 
 
 
-app.get("/", (req, res) => {
-  res.redirect("/login.html");
-});
+// app.get("/", (req, res) => {
+//   res.redirect("/login.html");
+// });
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
