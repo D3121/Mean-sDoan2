@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chỉnh sửa hồ sơ</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: linear-gradient(to right, #a1ffce, #faffd1);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .profile-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .profile-container h3 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .profile-container img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #4caf50;
+        margin-bottom: 15px;
+      }
+
+      .profile-container input[type="text"],
+      .profile-container input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      .profile-container p {
+        margin-top: 10px;
+        font-weight: 500;
+        color: #444;
+      }
+
+      .profile-container span {
+        color: #2e7d32;
+        font-weight: bold;
+      }
+
+      .profile-container .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .profile-container button {
+        flex: 1;
+        padding: 12px;
+        margin: 0 5px;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .save-btn {
+        background-color: #4caf50;
+      }
+
+      .save-btn:hover {
+        background-color: #43a047;
+      }
+
+      .cancel-btn {
+        background-color: #9e9e9e;
+      }
+
+      .cancel-btn:hover {
+        background-color: #757575;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-container">
+      <h3>Chỉnh sửa hồ sơ</h3>
+      <img id="avatar-preview" src="/default-avatar.png" alt="Avatar" />
+      <input type="file" id="avatar-input" accept="image/*" />
+      <input type="text" id="display-name" placeholder="Tên hiển thị" />
+      <p><strong>Điểm cao nhất:</strong> <span id="high-score">0</span></p>
+      <div class="button-group">
+        <button class="save-btn" onclick="saveProfile()">Lưu</button>
+        <button class="cancel-btn" onclick="cancel()">Hủy</button>
+      </div>
+    </div>
+
+    <script>
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        window.location.href = "/login.html";
+      } else {
+        fetch(`/api/profile/${userId}`)
+          .then((res) => res.json())
+          .then((user) => {
+            document.getElementById("avatar-preview").src =
+              user.avatar || "/default-avatar.png";
+            document.getElementById("display-name").value =
+              user.displayName || "User";
+            document.getElementById("high-score").innerText =
+              user.highScore || 0;
+          })
+          .catch((err) => {
+            console.error("Error loading profile:", err);
+          });
+      }
+
+      document
+        .getElementById("avatar-input")
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              document.getElementById("avatar-preview").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+      function cancel() {
+        window.location.href = "/home.html";
+      }
+
+      function saveProfile() {
+        const displayName = document.getElementById("display-name").value;
+        const avatarFile = document.getElementById("avatar-input").files[0];
+
+        const formData = new FormData();
+        formData.append("displayName", displayName);
+        if (avatarFile) {
+          formData.append("avatar", avatarFile);
+        }
+
+        fetch(`/api/profile/${userId}`, {
+          method: "PUT",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then(() => {
+            alert("Cập nhật hồ sơ thành công!");
+            window.location.href = "/home.html";
+          })
+          .catch((err) => {
+            console.error("Error saving profile:", err);
+          });
+      }
+    </script>
+  </body>
+</html>

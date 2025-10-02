@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz App - Home</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: linear-gradient(to right, #a1ffce, #faffd1);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .home-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .home-container h2 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #4caf50;
+        margin-bottom: 15px;
+      }
+
+      .info {
+        margin-bottom: 20px;
+        color: #555;
+      }
+
+      .edit-link {
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 5px;
+      }
+
+      .edit-link:hover {
+        text-decoration: underline;
+      }
+
+      label {
+        font-weight: 500;
+        margin-bottom: 5px;
+        display: block;
+      }
+
+      select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+
+      .home-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .home-container button:hover {
+        background-color: #43a047;
+      }
+
+      .logout-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background-color: #d32f2f;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="logout-btn" onclick="logout()">Thoát</button>
+
+    <div class="home-container">
+      <h2>Chào mừng đến với Quiz App!</h2>
+      <img id="avatar" class="avatar" src="" alt="Avatar người dùng" />
+      <div class="info">
+        <p><strong>Tên:</strong> <span id="display-name"></span></p>
+        <p><strong>Điểm cao nhất:</strong> <span id="high-score">0</span></p>
+        <a href="javascript:void(0)" onclick="editProfile()" class="edit-link">Chỉnh sửa hồ sơ</a>
+      </div>
+
+      <label for="num-questions">Số câu hỏi:</label>
+      <select id="num-questions">
+        <option value="5">5 câu</option>
+        <option value="10">10 câu</option>
+        <option value="15">15 câu</option>
+        <option value="20">20 câu</option>
+      </select>
+
+      <button onclick="startQuiz()">Bắt đầu Quiz</button>
+      <button onclick="addQuestion()">Thêm câu hỏi</button>
+    </div>
+
+    <script>
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        window.location.href = "/login.html";
+      } else {
+        fetch(`/api/profile/${userId}`)
+          .then((res) => res.json())
+          .then((user) => {
+            document.getElementById("avatar").src =
+              user.avatar || "/default-avatar.png";
+            document.getElementById("display-name").innerText =
+              user.displayName || "User";
+            document.getElementById("high-score").innerText =
+              user.highScore || 0;
+          })
+          .catch((err) => {
+            console.error("Error loading profile:", err);
+          });
+      }
+
+      function startQuiz() {
+        const numQuestions = document.getElementById("num-questions").value;
+        localStorage.setItem("numQuestions", numQuestions);
+        window.location.href = "/quiz.html";
+      }
+
+      function addQuestion() {
+        window.location.href = "/add-question.html";
+      }
+
+      function editProfile() {
+        window.location.href = "/profile.html";
+      }
+
+      function logout() {
+        localStorage.removeItem("userId");
+        window.location.href = "/login.html";
+      }
+    </script>
+  </body>
+</html>
