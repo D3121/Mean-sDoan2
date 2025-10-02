@@ -1,15 +1,18 @@
 {
-  "dependencies": {
-    "express": "^5.1.0",
-    "mongodb": "^6.20.0",
-    "mongoose": "^8.18.3",
-    "multer": "^2.0.2"
-  },
   "name": "quizz-app",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.18.3",
+    "mongose": "^0.0.2-security",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10"
   },
   "keywords": [],
   "author": "",
